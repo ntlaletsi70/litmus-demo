@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-target
+  namespace: litmus-demo
+  labels:
+    app: nginx-target
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx-target
+  template:
+    metadata:
+      labels:
+        app: nginx-target
+        litmuschaos.io/chaos: "true"
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          resources:
+            requests:
+              cpu: 20m
+              memory: 32Mi
+            limits:
+              cpu: 50m
+              memory: 64Mi
