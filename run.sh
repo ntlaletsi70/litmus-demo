@@ -45,7 +45,8 @@ kubectl apply -f "$DIR/manifests/04-chaosengine.yaml"
 
 echo "waiting for chaosresult verdict..."
 until v=$(kubectl -n "$NS" get chaosresult nginx-chaos-pod-delete \
-    -o jsonpath='{.spec.experimentStatus.verdict}' 2>/dev/null) && [ -n "$v" ]; do
+    -o jsonpath='{.status.experimentStatus.verdict}' 2>/dev/null) \
+    && [ -n "$v" ] && [ "$v" != "Awaited" ]; do
   sleep 3
 done
 
@@ -56,4 +57,4 @@ kubectl -n "$NS" get pods -l app=nginx-target
 echo
 echo "== Verdict =="
 kubectl -n "$NS" get chaosresult nginx-chaos-pod-delete \
-  -o jsonpath='verdict: {.spec.experimentStatus.verdict}, probeSuccess: {.spec.experimentStatus.probeSuccessPercentage}%{"\n"}'
+  -o jsonpath='verdict: {.status.experimentStatus.verdict}, probeSuccess: {.status.experimentStatus.probeSuccessPercentage}%{"\n"}'
